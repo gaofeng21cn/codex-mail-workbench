@@ -1,0 +1,28 @@
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+
+def repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def default_state_dir() -> Path:
+    configured = os.environ.get("CODEX_MAIL_HOME")
+    if configured:
+        return Path(configured).expanduser()
+    return Path.home() / ".codex-mail-workbench"
+
+
+def default_config_path() -> Path:
+    return default_state_dir() / "accounts.yaml"
+
+
+def default_db_path() -> Path:
+    return default_state_dir() / "mail.sqlite"
+
+
+def default_sync_state_dir() -> Path:
+    return default_state_dir() / "sync-state"
+

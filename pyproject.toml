@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "codex-mail-workbench"
+version = "0.1.0"
+description = "Local mail workbench for Codex: IMAP/SMTP sync, SQLite store, CLI, MCP, and companion skill."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+codex-mail = "codex_mail_workbench.cli:main"
+codex-mail-mcp = "codex_mail_workbench.mcp_server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/codex_mail_workbench"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+

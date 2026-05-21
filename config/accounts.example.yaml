@@ -1,0 +1,38 @@
+version: 1
+accounts:
+  - account_id: gaof57_sysu
+    email: gaof57@mail.sysu.edu.cn
+    imap:
+      host: mail.sysu.edu.cn
+      port: 993
+      security: ssl
+      username: gaof57@mail.sysu.edu.cn
+      secret_ref: dt.mail.gaof57_sysu.imap.password
+    smtp:
+      host: mail.sysu.edu.cn
+      port: 465
+      security: ssl
+      username: gaof57@mail.sysu.edu.cn
+      secret_ref: dt.mail.gaof57_sysu.smtp.password
+    folders:
+      include: ["*"]
+      exclude: ["Archive"]
+
+  - account_id: gaofeng21cn_gmail
+    email: gaofeng21cn@gmail.com
+    imap:
+      host: imap.gmail.com
+      port: 993
+      security: ssl
+      username: gaofeng21cn@gmail.com
+      secret_ref: dt.mail.gaofeng21cn_gmail.imap.password
+    smtp:
+      host: smtp.gmail.com
+      port: 465
+      security: ssl
+      username: gaofeng21cn@gmail.com
+      secret_ref: dt.mail.gaofeng21cn_gmail.smtp.password
+    folders:
+      include: ["INBOX"]
+      exclude: []
+
