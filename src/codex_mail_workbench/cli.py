@@ -101,6 +101,8 @@ def cmd_recent(args: argparse.Namespace) -> int:
             conn,
             account_ids=[args.account] if args.account else None,
             folder_slug=args.folder,
+            since=args.since,
+            until=args.until,
             limit=args.limit,
         )
     finally:
@@ -117,6 +119,8 @@ def cmd_search(args: argparse.Namespace) -> int:
             account_ids=[args.account] if args.account else None,
             folder_slug=args.folder,
             query=args.query,
+            since=args.since,
+            until=args.until,
             limit=args.limit,
         )
         if args.include_body and len(rows) < args.limit:
@@ -126,6 +130,8 @@ def cmd_search(args: argparse.Namespace) -> int:
                 conn,
                 account_ids=[args.account] if args.account else None,
                 folder_slug=args.folder,
+                since=args.since,
+                until=args.until,
                 limit=args.max_scan,
             ):
                 if meta["storage_ref"] in seen:
@@ -188,6 +194,8 @@ def build_parser() -> argparse.ArgumentParser:
     recent = sub.add_parser("recent", help="列出最近邮件")
     recent.add_argument("--account", default="")
     recent.add_argument("--folder", default="")
+    recent.add_argument("--since", default="", help="include messages at or after this ISO datetime")
+    recent.add_argument("--until", default="", help="include messages before this ISO datetime")
     recent.add_argument("--limit", type=int, default=20)
     recent.set_defaults(func=cmd_recent)
 
@@ -195,6 +203,8 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("query")
     search.add_argument("--account", default="")
     search.add_argument("--folder", default="")
+    search.add_argument("--since", default="", help="include messages at or after this ISO datetime")
+    search.add_argument("--until", default="", help="include messages before this ISO datetime")
     search.add_argument("--limit", type=int, default=20)
     search.add_argument("--include-body", action=argparse.BooleanOptionalAction, default=True)
     search.add_argument("--max-scan", type=int, default=500)

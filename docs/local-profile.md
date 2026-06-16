@@ -86,7 +86,8 @@ as an agent workflow:
 1. Read the private overlay instructions.
 2. Run `codex-mail --json doctor` and `codex-mail --json accounts`.
 3. Sync relevant accounts when freshness matters.
-4. Search and read recent mail through `codex-mail`.
+4. Search and read recent mail through `codex-mail`, using `--since` and
+   `--until` for explicit date windows.
 5. Apply private text policies to classify reminders, archive candidates, and
    draft candidates.
 6. Return proposed actions with `storage_ref`, reason, confidence, and any
@@ -152,6 +153,13 @@ Then run an explicit sync for each account:
 
 ```bash
 CODEX_MAIL_HOME=./local codex-mail --json sync --account work --mode incremental
+```
+
+For date-window triage, prefer the CLI filters instead of direct SQLite access:
+
+```bash
+CODEX_MAIL_HOME=./local codex-mail --json recent --account work --since 2026-06-13T00:00:00+08:00 --until 2026-06-17T00:00:00+08:00 --limit 100
+CODEX_MAIL_HOME=./local codex-mail --json search "invoice" --account work --since 2026-06-13T00:00:00+08:00 --until 2026-06-17T00:00:00+08:00 --limit 20
 ```
 
 The sync command creates or updates:

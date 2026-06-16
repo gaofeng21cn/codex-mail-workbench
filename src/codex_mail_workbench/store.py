@@ -189,6 +189,8 @@ def list_messages(
     account_ids: list[str] | None = None,
     folder_slug: str | None = None,
     query: str | None = None,
+    since: str | None = None,
+    until: str | None = None,
     limit: int = 20,
 ) -> list[dict[str, Any]]:
     where = ["deleted=0"]
@@ -206,6 +208,12 @@ def list_messages(
             "(lower(subject) LIKE ? OR lower(sender) LIKE ? OR lower(recipient) LIKE ? OR lower(message_id) LIKE ?)"
         )
         params.extend([like, like, like, like])
+    if since:
+        where.append("datetime(date_iso) >= datetime(?)")
+        params.append(since)
+    if until:
+        where.append("datetime(date_iso) < datetime(?)")
+        params.append(until)
     params.append(max(1, min(int(limit), 500)))
     sql = (
         "SELECT account_id, folder, folder_slug, uid, uidvalidity, message_id, subject, "
@@ -222,6 +230,8 @@ def list_messages_with_raw(
     *,
     account_ids: list[str] | None = None,
     folder_slug: str | None = None,
+    since: str | None = None,
+    until: str | None = None,
     limit: int = 200,
 ) -> list[tuple[dict[str, Any], bytes]]:
     where = ["deleted=0"]
@@ -233,6 +243,12 @@ def list_messages_with_raw(
     if folder_slug:
         where.append("folder_slug=?")
         params.append(folder_slug)
+    if since:
+        where.append("datetime(date_iso) >= datetime(?)")
+        params.append(since)
+    if until:
+        where.append("datetime(date_iso) < datetime(?)")
+        params.append(until)
     params.append(max(1, min(int(limit), 2000)))
     sql = (
         "SELECT account_id, folder, folder_slug, uid, uidvalidity, message_id, subject, "

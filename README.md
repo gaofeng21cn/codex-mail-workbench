@@ -91,6 +91,7 @@ Sync and inspect mail:
 ```bash
 CODEX_MAIL_HOME=./local codex-mail --json sync --account work --mode incremental
 CODEX_MAIL_HOME=./local codex-mail --json recent --account work --limit 20
+CODEX_MAIL_HOME=./local codex-mail --json recent --account work --since 2026-06-13T00:00:00+08:00 --until 2026-06-17T00:00:00+08:00 --limit 100
 CODEX_MAIL_HOME=./local codex-mail --json search "invoice" --account work --limit 10
 CODEX_MAIL_HOME=./local codex-mail --json read 'email-store://work/INBOX/12345/abcdef1234567890'
 ```
@@ -125,7 +126,9 @@ codex-mail --json doctor
 codex-mail --json accounts
 codex-mail --json sync --account <account> --mode incremental
 codex-mail --json recent --account <account> --limit 20
+codex-mail --json recent --account <account> --since <start-iso> --until <end-iso> --limit 100
 codex-mail --json search "<query>" --account <account> --limit 20
+codex-mail --json search "<query>" --account <account> --since <start-iso> --until <end-iso> --limit 20
 codex-mail --json read 'email-store://...'
 ```
 
@@ -156,9 +159,11 @@ Recommended operating pattern:
 2. Run `codex-mail --json accounts` and treat the result as current account
    truth.
 3. Sync explicitly when freshness matters.
-4. Search metadata before opening message bodies.
-5. Read selected messages by `storage_ref`.
-6. Report account coverage and freshness gaps.
+4. Use `--since` and `--until` for explicit date windows such as "last three
+   days".
+5. Search metadata before opening message bodies.
+6. Read selected messages by `storage_ref`.
+7. Report account coverage and freshness gaps.
 
 The companion skill lives at
 [`skills/codex-mail-workbench/SKILL.md`](skills/codex-mail-workbench/SKILL.md).

@@ -49,6 +49,7 @@ CODEX_MAIL_HOME=./local codex-mail --json accounts
 ```bash
 CODEX_MAIL_HOME=./local codex-mail --json sync --account work --mode incremental
 CODEX_MAIL_HOME=./local codex-mail --json recent --account work --limit 20
+CODEX_MAIL_HOME=./local codex-mail --json recent --account work --since 2026-06-13T00:00:00+08:00 --until 2026-06-17T00:00:00+08:00 --limit 100
 CODEX_MAIL_HOME=./local codex-mail --json search "invoice" --account work --limit 10
 CODEX_MAIL_HOME=./local codex-mail --json read 'email-store://work/INBOX/12345/abcdef1234567890'
 ```
@@ -82,7 +83,9 @@ codex-mail --json doctor
 codex-mail --json accounts
 codex-mail --json sync --account <account> --mode incremental
 codex-mail --json recent --account <account> --limit 20
+codex-mail --json recent --account <account> --since <start-iso> --until <end-iso> --limit 100
 codex-mail --json search "<query>" --account <account> --limit 20
+codex-mail --json search "<query>" --account <account> --since <start-iso> --until <end-iso> --limit 20
 codex-mail --json read 'email-store://...'
 ```
 
@@ -108,9 +111,10 @@ MCP 当前暴露：
 1. 运行 `codex-mail --json doctor`。
 2. 运行 `codex-mail --json accounts`，以输出作为当前账号真相。
 3. 需要新鲜性时显式 sync。
-4. 先搜索 metadata，再读取少量选定正文。
-5. 用 `storage_ref` 读取邮件。
-6. 汇报每个账号的覆盖范围和 freshness gap。
+4. 对“最近三天”等时间窗口，使用明确的 `--since` / `--until` ISO 边界。
+5. 先搜索 metadata，再读取少量选定正文。
+6. 用 `storage_ref` 读取邮件。
+7. 汇报每个账号的覆盖范围和 freshness gap。
 
 伴随 skill 位于
 [`skills/codex-mail-workbench/SKILL.md`](skills/codex-mail-workbench/SKILL.md)。

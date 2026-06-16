@@ -40,3 +40,41 @@ def test_upsert_list_and_fetch_raw_message(tmp_path: Path) -> None:
     finally:
         conn.close()
 
+
+def test_list_messages_filters_by_date_window(tmp_path: Path) -> None:
+    conn = connect_email_store(tmp_path / "mail.sqlite")
+    try:
+        for uid, subject, date_iso in [
+            (1, "before", "2026-05-16T09:00:00+08:00"),
+            (2, "inside", "2026-05-17T09:00:00+08:00"),
+            (3, "after", "2026-05-18T09:00:00+08:00"),
+        ]:
+            upsert_email_message(
+                conn,
+                account_id="work",
+                folder="INBOX",
+                folder_slug="INBOX",
+                uid=uid,
+                uidvalidity=123,
+                message_id=f"<m{uid}@example.test>",
+                subject=subject,
+                sender="a@example.test",
+                recipient="b@example.test",
+                date_iso=date_iso,
+                raw_sha256=str(uid) * 64,
+                raw_eml=b"Subject: test\r\n\r\nbody",
+                attachments=[],
+                ingest_ts=date_iso,
+            )
+
+        rows = list_messages(
+            conn,
+            account_ids=["work"],
+            since="2026-05-17T00:00:00+08:00",
+            until="2026-05-18T00:00:00+08:00",
+            limit=10,
+        )
+
+        assert [row["subject"] for row in rows] == ["inside"]
+    finally:
+        conn.close()

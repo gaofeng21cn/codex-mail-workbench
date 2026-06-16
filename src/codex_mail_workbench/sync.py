@@ -146,8 +146,13 @@ def sync_account(
             last_uid = int(folder_state.get("last_uid_synced", 0) or 0) if isinstance(folder_state, dict) else 0
             scan_uids = remote_uids if mode == "initial" else [u for u in remote_uids if u > last_uid]
             if limit_per_folder is not None:
-                scan_uids = scan_uids[-max(0, int(limit_per_folder)) :]
+                max_scan = max(0, int(limit_per_folder))
+                if mode == "incremental":
+                    scan_uids = scan_uids[:max_scan]
+                else:
+                    scan_uids = scan_uids[-max_scan:]
             folder_new = 0
+            fetched_uids: list[int] = []
             for uid in scan_uids:
                 try:
                     typ_fetch, fetched = client.uid("fetch", str(uid), "(UID BODY.PEEK[])")
@@ -159,6 +164,7 @@ def sync_account(
                 raw_msg = raw_map.get(uid)
                 if not raw_msg:
                     continue
+                fetched_uids.append(uid)
                 headers = parse_headers(raw_msg)
                 raw_hash = hashlib.sha256(raw_msg).hexdigest()
                 if not dry_run:
@@ -182,8 +188,8 @@ def sync_account(
                 folder_new += 1
             if remote_uids and not dry_run:
                 state_uid = max(remote_uids)
-                if limit_per_folder is not None and scan_uids:
-                    state_uid = max(last_uid, max(scan_uids))
+                if limit_per_folder is not None:
+                    state_uid = max(last_uid, max(fetched_uids, default=last_uid))
                 folders_state[folder_name] = {
                     "folder_name": folder_name,
                     "last_uid_synced": state_uid,

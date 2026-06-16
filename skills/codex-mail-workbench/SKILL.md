@@ -52,7 +52,9 @@ Use read-only commands first:
 ```bash
 codex-mail --json accounts
 codex-mail --json recent --account work --limit 20
+codex-mail --json recent --account work --since 2026-06-13T00:00:00+08:00 --until 2026-06-17T00:00:00+08:00 --limit 100
 codex-mail --json search "invoice" --account personal --limit 20
+codex-mail --json search "invoice" --account personal --since 2026-06-13T00:00:00+08:00 --until 2026-06-17T00:00:00+08:00 --limit 20
 codex-mail --json read 'email-store://...'
 ```
 
@@ -78,12 +80,14 @@ Use this pattern when the user asks to review recent mailbox state:
 
 ```bash
 codex-mail --json recent --account <account> --limit 20
+codex-mail --json recent --account <account> --since <start-iso> --until <end-iso> --limit 100
 ```
 
 5. Search locally before opening more message bodies:
 
 ```bash
 codex-mail --json search "<sender, subject, project, or thread clue>" --account <account> --limit 10
+codex-mail --json search "<sender, subject, project, or thread clue>" --account <account> --since <start-iso> --until <end-iso> --limit 10
 ```
 
 6. Read selected messages by `storage_ref`:
@@ -102,6 +106,10 @@ overlay rules when present, and return reminders, archive candidates, reply
 requirements, and draft candidates. Keep destructive or externally visible
 actions behind explicit confirmation unless the private overlay and user request
 clearly permit that exact action.
+
+For date-window requests, compute explicit local ISO bounds and use
+`--since <start-iso>` and `--until <end-iso>` on `recent` and `search`. Do not
+query the SQLite database directly unless the CLI surface is insufficient.
 
 ## Safety
 

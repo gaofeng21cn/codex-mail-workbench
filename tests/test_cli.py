@@ -82,6 +82,52 @@ def test_cli_recent_search_and_read_json(tmp_path: Path) -> None:
     assert "Please review" in read_payload["message"]["body_text"]
 
 
+def test_cli_recent_filters_by_date_window(tmp_path: Path) -> None:
+    db = tmp_path / "mail.sqlite"
+    conn = connect_email_store(db)
+    try:
+        for uid, subject, date_iso in [
+            (1, "older thread", "2026-05-16T09:00:00+08:00"),
+            (2, "current thread", "2026-05-17T09:00:00+08:00"),
+        ]:
+            upsert_email_message(
+                conn,
+                account_id="work",
+                folder="INBOX",
+                folder_slug="INBOX",
+                uid=uid,
+                uidvalidity=1,
+                message_id=f"<cli-{uid}@example.test>",
+                subject=subject,
+                sender="editor@example.test",
+                recipient="work@example.com",
+                date_iso=date_iso,
+                raw_sha256=str(uid) * 64,
+                raw_eml=b"Subject: test\r\n\r\nbody",
+                attachments=[],
+                ingest_ts=date_iso,
+            )
+    finally:
+        conn.close()
+
+    result = run_cli(
+        db,
+        "recent",
+        "--account",
+        "work",
+        "--since",
+        "2026-05-17T00:00:00+08:00",
+        "--until",
+        "2026-05-18T00:00:00+08:00",
+        "--limit",
+        "10",
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert [row["subject"] for row in payload["messages"]] == ["current thread"]
+
+
 def test_cli_doctor_omits_empty_legacy_keychain_service(tmp_path: Path) -> None:
     db = tmp_path / "mail.sqlite"
     result = run_cli(db, "doctor")

@@ -25,6 +25,8 @@ TOOLS = [
             "properties": {
                 "account": {"type": "string"},
                 "folder": {"type": "string"},
+                "since": {"type": "string"},
+                "until": {"type": "string"},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 200},
             },
         },
@@ -38,6 +40,8 @@ TOOLS = [
                 "query": {"type": "string"},
                 "account": {"type": "string"},
                 "folder": {"type": "string"},
+                "since": {"type": "string"},
+                "until": {"type": "string"},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 200},
             },
             "required": ["query"],
@@ -74,6 +78,8 @@ def dispatch_tool(name: str, arguments: dict[str, Any], db_path: Path) -> dict[s
                 conn,
                 account_ids=[arguments["account"]] if arguments.get("account") else None,
                 folder_slug=str(arguments.get("folder") or "") or None,
+                since=str(arguments.get("since") or "") or None,
+                until=str(arguments.get("until") or "") or None,
                 limit=int(arguments.get("limit") or 20),
             )
             return text_result({"ok": True, "messages": messages})
@@ -83,6 +89,8 @@ def dispatch_tool(name: str, arguments: dict[str, Any], db_path: Path) -> dict[s
                 account_ids=[arguments["account"]] if arguments.get("account") else None,
                 folder_slug=str(arguments.get("folder") or "") or None,
                 query=str(arguments["query"]),
+                since=str(arguments.get("since") or "") or None,
+                until=str(arguments.get("until") or "") or None,
                 limit=int(arguments.get("limit") or 20),
             )
             return text_result({"ok": True, "messages": messages})
