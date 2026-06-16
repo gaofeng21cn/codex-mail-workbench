@@ -80,3 +80,12 @@ def test_cli_recent_search_and_read_json(tmp_path: Path) -> None:
     assert recent_payload["messages"][0]["subject"] == "Research thread"
     assert search_payload["messages"][0]["storage_ref"] == storage_ref
     assert "Please review" in read_payload["message"]["body_text"]
+
+
+def test_cli_doctor_omits_empty_legacy_keychain_service(tmp_path: Path) -> None:
+    db = tmp_path / "mail.sqlite"
+    result = run_cli(db, "doctor")
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["keychain_services"] == ["codex-mail-workbench"]

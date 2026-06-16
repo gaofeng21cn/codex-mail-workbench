@@ -8,7 +8,7 @@ SOURCE_SYNC_STATE="${CODEX_MAIL_SOURCE_SYNC_STATE:-}"
 
 usage() {
   cat <<'EOF'
-Usage: migrate-digital-twin-mail.sh --store <mail.sqlite> [--sync-state <dir>]
+Usage: migrate-mail-store --store <mail.sqlite> [--sync-state <dir>]
 
 Environment:
   CODEX_MAIL_HOME               Target state directory.
@@ -85,4 +85,3 @@ if [[ -n "${SOURCE_SYNC_STATE}" ]]; then
 fi
 
 echo "[OK] migrated mail config/store to ${STATE_DIR}"
-

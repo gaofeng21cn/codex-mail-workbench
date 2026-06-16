@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -8,7 +9,7 @@ from typing import Any
 
 
 KEYCHAIN_SERVICE = "codex-mail-workbench"
-LEGACY_KEYCHAIN_SERVICE = "digital-twin-mail"
+LEGACY_KEYCHAIN_SERVICE = os.environ.get("CODEX_MAIL_LEGACY_KEYCHAIN_SERVICE", "")
 
 
 @dataclass(frozen=True)

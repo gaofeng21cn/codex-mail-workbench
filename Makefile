@@ -3,7 +3,7 @@ PREFIX ?= $(HOME)/.local
 BIN_DIR := $(PREFIX)/bin
 ROOT := $(CURDIR)
 
-.PHONY: test install-local migrate-from-digital-twin
+.PHONY: test install-local migrate-mail-store
 
 test:
 	$(PYTHON) -m pytest -q
@@ -14,6 +14,5 @@ install-local:
 	printf '%s\n' '#!/usr/bin/env bash' 'PYTHONPATH="$(ROOT)/src" exec "$(PYTHON)" -m codex_mail_workbench.mcp_server "$$@"' > "$(BIN_DIR)/codex-mail-mcp"
 	chmod +x "$(BIN_DIR)/codex-mail" "$(BIN_DIR)/codex-mail-mcp"
 
-migrate-from-digital-twin:
-	bash scripts/migrate-digital-twin-mail.sh
-
+migrate-mail-store:
+	bash scripts/migrate-mail-store.sh

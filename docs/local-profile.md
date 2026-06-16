@@ -76,6 +76,9 @@ security add-generic-password -s codex-mail-workbench -a work-smtp -w '<app-pass
 
 Use different `credential_ref` values for each account or credential. Existing
 local profiles that still use `secret_ref` remain supported for compatibility.
+If you are migrating from an older private Keychain service name, set
+`CODEX_MAIL_LEGACY_KEYCHAIN_SERVICE=<service-name>` locally instead of editing
+the public repository.
 
 ## Initialize State
 

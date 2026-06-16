@@ -64,7 +64,9 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         "db_path": str(db_path),
         "db_exists": db_path.exists(),
         "accounts": sorted(accounts.keys()),
-        "keychain_services": [KEYCHAIN_SERVICE, LEGACY_KEYCHAIN_SERVICE],
+        "keychain_services": [
+            svc for svc in [KEYCHAIN_SERVICE, LEGACY_KEYCHAIN_SERVICE] if svc
+        ],
     }
     emit(payload, as_json=args.json)
     return 0 if payload["ok"] else 1
