@@ -9,20 +9,20 @@ def test_load_accounts_config_parses_yaml(tmp_path: Path) -> None:
         """
 version: 1
 accounts:
-  - account_id: sysu
-    email: gaof57@mail.sysu.edu.cn
+  - account_id: work
+    email: work@example.com
     imap:
-      host: mail.sysu.edu.cn
+      host: imap.example.com
       port: 993
       security: ssl
-      username: gaof57@mail.sysu.edu.cn
-      secret_ref: dt.mail.gaof57_sysu.imap.password
+      username: work@example.com
+      secret_ref: mail.work.imap.password
     smtp:
-      host: mail.sysu.edu.cn
+      host: smtp.example.com
       port: 465
       security: ssl
-      username: gaof57@mail.sysu.edu.cn
-      secret_ref: dt.mail.gaof57_sysu.smtp.password
+      username: work@example.com
+      secret_ref: mail.work.smtp.password
     folders:
       include: ["*"]
       exclude: ["Archive"]
@@ -32,9 +32,9 @@ accounts:
 
     accounts = load_accounts_config(config)
 
-    assert list(accounts) == ["sysu"]
-    assert accounts["sysu"].imap.host == "mail.sysu.edu.cn"
-    assert accounts["sysu"].smtp.port == 465
-    assert accounts["sysu"].include_folders == ["*"]
-    assert accounts["sysu"].exclude_folders == ["Archive"]
+    assert list(accounts) == ["work"]
+    assert accounts["work"].imap.host == "imap.example.com"
+    assert accounts["work"].smtp.port == 465
+    assert accounts["work"].include_folders == ["*"]
+    assert accounts["work"].exclude_folders == ["Archive"]
 

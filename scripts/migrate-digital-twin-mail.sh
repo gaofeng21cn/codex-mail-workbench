@@ -2,25 +2,86 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OLD_ROOT="${1:-/Users/gaofeng/workspace/Archive/数字分身}"
 STATE_DIR="${CODEX_MAIL_HOME:-${HOME}/.codex-mail-workbench}"
+SOURCE_STORE="${CODEX_MAIL_SOURCE_STORE:-}"
+SOURCE_SYNC_STATE="${CODEX_MAIL_SOURCE_SYNC_STATE:-}"
+
+usage() {
+  cat <<'EOF'
+Usage: migrate-digital-twin-mail.sh --store <mail.sqlite> [--sync-state <dir>]
+
+Environment:
+  CODEX_MAIL_HOME               Target state directory.
+  CODEX_MAIL_SOURCE_STORE       Source SQLite mail store path.
+  CODEX_MAIL_SOURCE_SYNC_STATE  Optional source sync-state directory.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --store)
+      if [[ $# -lt 2 || -z "$2" ]]; then
+        echo "error: --store requires a path" >&2
+        usage >&2
+        exit 2
+      fi
+      SOURCE_STORE="$2"
+      shift 2
+      ;;
+    --sync-state)
+      if [[ $# -lt 2 || -z "$2" ]]; then
+        echo "error: --sync-state requires a directory" >&2
+        usage >&2
+        exit 2
+      fi
+      SOURCE_SYNC_STATE="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "error: unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ -z "${SOURCE_STORE}" ]]; then
+  echo "error: provide --store or CODEX_MAIL_SOURCE_STORE" >&2
+  usage >&2
+  exit 2
+fi
+
+if [[ ! -f "${SOURCE_STORE}" ]]; then
+  echo "error: source store does not exist: ${SOURCE_STORE}" >&2
+  exit 1
+fi
 
 mkdir -p "${STATE_DIR}"
 
 install -m 600 "${ROOT_DIR}/config/accounts.example.yaml" "${STATE_DIR}/accounts.yaml"
 
-if [[ -f "${OLD_ROOT}/operations/email/store/email_raw_v1.sqlite" ]]; then
-  install -m 600 "${OLD_ROOT}/operations/email/store/email_raw_v1.sqlite" "${STATE_DIR}/mail.sqlite"
-  for suffix in -wal -shm; do
-    if [[ -f "${OLD_ROOT}/operations/email/store/email_raw_v1.sqlite${suffix}" ]]; then
-      install -m 600 "${OLD_ROOT}/operations/email/store/email_raw_v1.sqlite${suffix}" "${STATE_DIR}/mail.sqlite${suffix}"
-    fi
-  done
-fi
+install -m 600 "${SOURCE_STORE}" "${STATE_DIR}/mail.sqlite"
+for suffix in -wal -shm; do
+  if [[ -f "${SOURCE_STORE}${suffix}" ]]; then
+    install -m 600 "${SOURCE_STORE}${suffix}" "${STATE_DIR}/mail.sqlite${suffix}"
+  fi
+done
 
-if [[ -d "${OLD_ROOT}/operations/email/sync-state" ]]; then
+if [[ -n "${SOURCE_SYNC_STATE}" ]]; then
+  if [[ ! -d "${SOURCE_SYNC_STATE}" ]]; then
+    echo "error: source sync-state directory does not exist: ${SOURCE_SYNC_STATE}" >&2
+    exit 1
+  fi
   mkdir -p "${STATE_DIR}/sync-state"
-  cp -p "${OLD_ROOT}"/operations/email/sync-state/*.json "${STATE_DIR}/sync-state/" 2>/dev/null || true
+  shopt -s nullglob
+  sync_state_files=("${SOURCE_SYNC_STATE}"/*.json)
+  if [[ ${#sync_state_files[@]} -gt 0 ]]; then
+    cp -p "${sync_state_files[@]}" "${STATE_DIR}/sync-state/"
+  fi
 fi
 
 echo "[OK] migrated mail config/store to ${STATE_DIR}"

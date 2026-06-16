@@ -15,7 +15,7 @@ def test_upsert_list_and_fetch_raw_message(tmp_path: Path) -> None:
         raw = b"Subject: hello\r\nMessage-ID: <m1@example.test>\r\n\r\nbody"
         storage_ref = upsert_email_message(
             conn,
-            account_id="sysu",
+            account_id="work",
             folder="INBOX",
             folder_slug="INBOX",
             uid=10,
@@ -31,7 +31,7 @@ def test_upsert_list_and_fetch_raw_message(tmp_path: Path) -> None:
             ingest_ts="2026-05-17T09:01:00+08:00",
         )
 
-        rows = list_messages(conn, account_ids=["sysu"], limit=5)
+        rows = list_messages(conn, account_ids=["work"], limit=5)
 
         assert storage_ref_exists(conn, storage_ref)
         assert fetch_raw_email_by_storage_ref(conn, storage_ref) == raw

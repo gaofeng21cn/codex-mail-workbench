@@ -34,14 +34,14 @@ def seed_message(db: Path) -> str:
         raw = (
             b"Subject: Research thread\r\n"
             b"From: editor@example.test\r\n"
-            b"To: gaof57@mail.sysu.edu.cn\r\n"
+            b"To: work@example.com\r\n"
             b"Message-ID: <seed@example.test>\r\n"
             b"\r\n"
             b"Please review this manuscript."
         )
         return upsert_email_message(
             conn,
-            account_id="sysu",
+            account_id="work",
             folder="INBOX",
             folder_slug="INBOX",
             uid=1,
@@ -49,7 +49,7 @@ def seed_message(db: Path) -> str:
             message_id="<seed@example.test>",
             subject="Research thread",
             sender="editor@example.test",
-            recipient="gaof57@mail.sysu.edu.cn",
+            recipient="work@example.com",
             date_iso="2026-05-17T09:00:00+08:00",
             raw_sha256="2" * 64,
             raw_eml=raw,
@@ -64,8 +64,8 @@ def test_cli_recent_search_and_read_json(tmp_path: Path) -> None:
     db = tmp_path / "mail.sqlite"
     storage_ref = seed_message(db)
 
-    recent = run_cli(db, "recent", "--account", "sysu", "--limit", "10")
-    search = run_cli(db, "search", "manuscript", "--account", "sysu")
+    recent = run_cli(db, "recent", "--account", "work", "--limit", "10")
+    search = run_cli(db, "search", "manuscript", "--account", "work")
     read = run_cli(db, "read", storage_ref)
 
     assert recent.returncode == 0, recent.stderr
