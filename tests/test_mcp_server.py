@@ -11,7 +11,7 @@ def test_mcp_dispatch_recent_returns_messages(tmp_path: Path) -> None:
     try:
         upsert_email_message(
             conn,
-            account_id="sysu",
+            account_id="work",
             folder="INBOX",
             folder_slug="INBOX",
             uid=1,
@@ -29,7 +29,7 @@ def test_mcp_dispatch_recent_returns_messages(tmp_path: Path) -> None:
     finally:
         conn.close()
 
-    result = dispatch_tool("mail_recent", {"account": "sysu", "limit": 5}, db)
+    result = dispatch_tool("mail_recent", {"account": "work", "limit": 5}, db)
     payload = json.loads(result["content"][0]["text"])
 
     assert payload["ok"] is True
