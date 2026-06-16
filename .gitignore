@@ -3,9 +3,29 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 *.pyc
+
+# Local/private mail state. Keep real accounts, mail stores, and profile notes
+# out of the public repository.
+local/
+.codex-mail-workbench/
+accounts.yaml
+accounts.local.yaml
+accounts.private.yaml
+config/accounts.local.yaml
+config/accounts.private.yaml
+sync-state/
+.env
+.env.*
+*.eml
+*.mbox
+*.maildir/
 *.sqlite
+*.sqlite3
 *.sqlite-shm
 *.sqlite-wal
+
+# Local development artifacts.
+.worktrees/
 dist/
 build/
 *.egg-info/

@@ -9,6 +9,8 @@ def repo_root() -> Path:
 
 
 def default_state_dir() -> Path:
+    # CODEX_MAIL_HOME intentionally supports repo-local ignored profiles such
+    # as ./local while keeping the package default outside the repository.
     configured = os.environ.get("CODEX_MAIL_HOME")
     if configured:
         return Path(configured).expanduser()
@@ -25,4 +27,3 @@ def default_db_path() -> Path:
 
 def default_sync_state_dir() -> Path:
     return default_state_dir() / "sync-state"
-
