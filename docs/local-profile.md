@@ -38,6 +38,65 @@ local/sync-state/
 triage categories, important senders, or response conventions. The current CLI
 does not require it.
 
+## Private Agent Overlay
+
+For personal mailbox assistance, keep private Agent-readable rules under
+`local/`. These files are ignored by Git and should not be pushed to the public
+repository.
+
+Recommended layout:
+
+```text
+local/
+  AGENTS.md
+  profile.md
+  accounts.yaml
+  skills/
+    personal-mail-assistant/
+      SKILL.md
+  policies/
+    mailbox-triage.md
+    journal-review-policy.md
+    manuscript-status-policy.md
+    reply-drafting-policy.md
+  templates/
+    decline-review.md
+    manuscript-status-reply.md
+    meeting-reply.md
+  context/
+    obsidian.md
+    people.md
+    projects.md
+  notes/
+    examples.md
+```
+
+The public repository provides the tool surface. The private overlay provides
+judgment: which mail matters, what can be archived, when the user must reply,
+what context to consult, and what draft style to use.
+
+Use `local/AGENTS.md` as the private entry point for agents. A typical private
+entry should tell the agent to read `local/profile.md`, `local/policies/`,
+`local/context/`, and relevant templates before judging mail. The public skill
+will only point to this overlay; it should not contain personal policy content.
+
+One-shot prompts such as "check the last three days of mail" should be handled
+as an agent workflow:
+
+1. Read the private overlay instructions.
+2. Run `codex-mail --json doctor` and `codex-mail --json accounts`.
+3. Sync relevant accounts when freshness matters.
+4. Search and read recent mail through `codex-mail`.
+5. Apply private text policies to classify reminders, archive candidates, and
+   draft candidates.
+6. Return proposed actions with `storage_ref`, reason, confidence, and any
+   required confirmation.
+
+The default boundary is read-first. Archive, delete, send, or other mailbox
+writes should require explicit user confirmation unless the private overlay
+defines a narrow, reversible, auditable action surface and the user has enabled
+it.
+
 ## accounts.yaml
 
 Create `local/accounts.yaml` with placeholder-free local account ids. Account ids

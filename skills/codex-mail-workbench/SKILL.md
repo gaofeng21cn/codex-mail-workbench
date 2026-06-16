@@ -27,6 +27,24 @@ ask the user to paste mailbox passwords into chat, docs, or config snippets.
 Treat `codex-mail --json accounts` as the current account truth. Do not assume
 configured account ids from memory or examples.
 
+## Private Overlay
+
+If a private overlay exists, read it before making triage or drafting judgments.
+Common overlay locations:
+
+- `local/AGENTS.md`
+- `local/profile.md`
+- `local/skills/personal-mail-assistant/SKILL.md`
+- `local/policies/*.md`
+- `local/context/*.md`
+- `local/templates/*.md`
+
+The public workbench provides mailbox facts and safe read tools. The private
+overlay provides user-specific judgment rules, response style, important
+projects, people, journal policy, manuscript tracking rules, and allowed
+Obsidian context. Do not copy private overlay content into public repository
+files or final summaries unless the user explicitly asks for that content.
+
 ## Safe Read Path
 
 Use read-only commands first:
@@ -52,22 +70,23 @@ read-only inspection for accounts with usable local data.
 
 Use this pattern when the user asks to review recent mailbox state:
 
-1. Run `codex-mail --json doctor` and `codex-mail --json accounts`.
-2. If freshness matters, run `codex-mail --json sync --account <account> --mode incremental`
+1. Read any private overlay instructions listed above.
+2. Run `codex-mail --json doctor` and `codex-mail --json accounts`.
+3. If freshness matters, run `codex-mail --json sync --account <account> --mode incremental`
    for each relevant configured account.
-3. Read recent metadata:
+4. Read recent metadata:
 
 ```bash
 codex-mail --json recent --account <account> --limit 20
 ```
 
-4. Search locally before opening more message bodies:
+5. Search locally before opening more message bodies:
 
 ```bash
 codex-mail --json search "<sender, subject, project, or thread clue>" --account <account> --limit 10
 ```
 
-5. Read selected messages by `storage_ref`:
+6. Read selected messages by `storage_ref`:
 
 ```bash
 codex-mail --json read 'email-store://...'
@@ -76,6 +95,13 @@ codex-mail --json read 'email-store://...'
 Return a compact summary grouped by account. Include the action needed, why it
 matters, freshness gaps, and the best local identifier. Do not expose long
 quoted email text.
+
+For one-shot requests such as "check the last three days of mail", treat the
+request as a complete triage run: gather fresh mailbox facts, apply private
+overlay rules when present, and return reminders, archive candidates, reply
+requirements, and draft candidates. Keep destructive or externally visible
+actions behind explicit confirmation unless the private overlay and user request
+clearly permit that exact action.
 
 ## Safety
 
