@@ -101,7 +101,7 @@ def sync_account(
     dry_run: bool = False,
 ) -> dict[str, object]:
     account = load_account(config_path, account_id)
-    secret = keychain_get_secret(account.imap.secret_ref)
+    secret = keychain_get_secret(account.imap.credential_ref)
     client = connect_imap(account)
     client.login(account.imap.username, secret)
     state_path = state_dir / f"{account_id}.json"

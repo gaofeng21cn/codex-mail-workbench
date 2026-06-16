@@ -53,13 +53,13 @@ accounts:
       port: 993
       security: ssl
       username: user@example.com
-      secret_ref: work-imap
+      credential_ref: work-imap
     smtp:
       host: smtp.example.com
       port: 465
       security: ssl
       username: user@example.com
-      secret_ref: work-smtp
+      credential_ref: work-smtp
     folders:
       include:
         - INBOX
@@ -74,7 +74,8 @@ security add-generic-password -s codex-mail-workbench -a work-imap -w '<app-pass
 security add-generic-password -s codex-mail-workbench -a work-smtp -w '<app-password>'
 ```
 
-Use different `secret_ref` values for each account or credential.
+Use different `credential_ref` values for each account or credential. Existing
+local profiles that still use `secret_ref` remain supported for compatibility.
 
 ## Initialize State
 

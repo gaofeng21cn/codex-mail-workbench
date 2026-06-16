@@ -17,7 +17,7 @@ class MailEndpoint:
     port: int
     security: str
     username: str
-    secret_ref: str
+    credential_ref: str
 
 
 @dataclass(frozen=True)
@@ -78,12 +78,13 @@ def _string_list(value: Any, field: str, default: list[str]) -> list[str]:
 
 
 def _endpoint(raw: dict[str, Any], field: str) -> MailEndpoint:
+    credential_ref = raw.get("credential_ref", raw.get("secret_ref"))
     return MailEndpoint(
         host=_str(raw.get("host"), f"{field}.host"),
         port=_int(raw.get("port"), f"{field}.port"),
         security=_str(raw.get("security"), f"{field}.security").lower(),
         username=_str(raw.get("username"), f"{field}.username"),
-        secret_ref=_str(raw.get("secret_ref"), f"{field}.secret_ref"),
+        credential_ref=_str(credential_ref, f"{field}.credential_ref"),
     )
 
 
@@ -123,7 +124,7 @@ def load_account(path: Path, account_id: str) -> MailAccount:
 
 
 def keychain_get_secret(
-    secret_ref: str,
+    credential_ref: str,
     *,
     service: str = KEYCHAIN_SERVICE,
     legacy_service: str | None = LEGACY_KEYCHAIN_SERVICE,
@@ -131,9 +132,8 @@ def keychain_get_secret(
     for svc in [service, legacy_service]:
         if not svc:
             continue
-        cmd = ["security", "find-generic-password", "-s", svc, "-a", secret_ref, "-w"]
+        cmd = ["security", "find-generic-password", "-s", svc, "-a", credential_ref, "-w"]
         result = subprocess.run(cmd, check=False, capture_output=True, text=True)
         if result.returncode == 0:
             return result.stdout.strip()
-    raise RuntimeError(f"Keychain 读取失败: account={secret_ref}")
-
+    raise RuntimeError(f"Keychain 读取失败: account={credential_ref}")
