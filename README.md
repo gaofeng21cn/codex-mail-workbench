@@ -1,24 +1,30 @@
 # Codex Mail Workbench
 
-独立邮件工作台，用于让 Codex 管理本机邮箱。它从旧数字分身项目抽出邮件协议层和本地库，不承接旧项目的知识资产化主线。
+Codex Mail Workbench is a local mail workspace for Codex. It syncs IMAP
+mailboxes into a private SQLite store, exposes a small read-first CLI, and can
+serve the same local store to Codex through an MCP stdio server.
 
-## 当前能力
+The public repository contains the reusable workbench code, documentation, and
+examples. Real account configuration, mailbox content, sync state, and user
+profile notes belong in an ignored local profile directory or in the directory
+selected by `CODEX_MAIL_HOME`.
 
-- IMAP 同步到本地 SQLite raw EML store
-- 本地 `recent/search/read` CLI
-- 最小 MCP stdio server：`mail_recent`、`mail_search`、`mail_read`
-- Codex companion skill
-- 默认复用旧 `digital-twin-mail` Keychain 凭据，也支持新 service `codex-mail-workbench`
+## Capabilities
 
-## 安装
+- Sync selected IMAP folders into a local SQLite raw EML store.
+- List, search, and read locally stored messages through `codex-mail`.
+- Serve read-only MCP tools: `mail_recent`, `mail_search`, and `mail_read`.
+- Provide a companion Codex skill for safe mailbox inspection.
+- Keep credentials in macOS Keychain under service `codex-mail-workbench`.
+
+## Install
 
 ```bash
 make install-local
-make migrate-from-digital-twin
 codex-mail --json doctor
 ```
 
-默认状态目录：
+The default state directory is:
 
 ```text
 ~/.codex-mail-workbench/
@@ -27,30 +33,44 @@ codex-mail --json doctor
   sync-state/
 ```
 
-可用 `CODEX_MAIL_HOME` 指向其他状态目录。
-
-## 常用命令
+For a repo-local private profile during development, point the workbench at
+`./local`:
 
 ```bash
+mkdir -p local/sync-state
+CODEX_MAIL_HOME=./local codex-mail --json doctor
+```
+
+See [docs/local-profile.md](docs/local-profile.md) for the expected local file
+layout and publication checklist.
+
+## CLI Examples
+
+```bash
+CODEX_MAIL_HOME=./local codex-mail --json doctor
 codex-mail --json accounts
-codex-mail --json recent --account gaof57_sysu --limit 20
-codex-mail --json search "Research稿件初审" --account gaof57_sysu --limit 20
-codex-mail --json read 'email-store://gaof57_sysu/INBOX/1555475851/1d005c36d3391e4b'
-codex-mail --json sync --account gaof57_sysu --mode incremental
+codex-mail --json sync --account work --mode incremental
+codex-mail --json recent --account work --limit 20
+codex-mail --json search "invoice" --account personal --limit 20
+codex-mail --json read 'email-store://work/INBOX/12345/abcdef1234567890'
 ```
 
 ## MCP
 
 ```bash
-codex-mail-mcp --db ~/.codex-mail-workbench/mail.sqlite
+CODEX_MAIL_HOME=./local codex-mail-mcp --db ./local/mail.sqlite
 ```
 
-当前 MCP 暴露只读工具，适合 Codex 查询邮件。写操作和发信需要单独加审批/草稿流程后再开放。
+The MCP server exposes read-only tools for Codex mailbox lookup. Sending,
+deleting, archiving, or moving mail should only be added through explicit,
+auditable commands with user approval.
 
-## 边界
+## Privacy Boundary
 
-- 不再依赖旧数字分身 repo 作为运行位置。
-- 不直接读 Apple Mail 私有数据库。
-- 旧 Apple Mail skill 保留为本机 UI fallback。
-- 首版不开放 live send/delete/move，避免误操作。
-
+- Commit only generic code, documentation, and examples.
+- Do not commit real `accounts.yaml`, `profile.md`, `mail.sqlite`,
+  `mail.sqlite-*`, or `sync-state/` files.
+- Store mailbox passwords or app passwords in Keychain, not in YAML or docs.
+- Prefer local `storage_ref` values over Apple Mail private ids.
+- Keep the default workflow read-first. Live write operations require a
+  deliberate command surface and an explicit user request.
