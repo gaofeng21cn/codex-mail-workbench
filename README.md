@@ -166,7 +166,9 @@ Recommended operating pattern:
 7. Report account coverage and freshness gaps.
 
 The companion skill lives at
-[`skills/codex-mail-workbench/SKILL.md`](skills/codex-mail-workbench/SKILL.md).
+[`skills/codex-mail-workbench/SKILL.md`](skills/codex-mail-workbench/SKILL.md),
+with UI discovery metadata in
+[`skills/codex-mail-workbench/agents/openai.yaml`](skills/codex-mail-workbench/agents/openai.yaml).
 
 ## Privacy Boundary
 
@@ -189,6 +191,7 @@ publication checklist.
 - [Architecture](docs/architecture.md)
 - [Local Profile](docs/local-profile.md)
 - [Companion Skill](skills/codex-mail-workbench/SKILL.md)
+- [Skill Discovery Metadata](skills/codex-mail-workbench/agents/openai.yaml)
 
 ## Technical Validation
 

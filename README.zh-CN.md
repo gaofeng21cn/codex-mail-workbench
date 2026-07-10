@@ -117,7 +117,9 @@ MCP 当前暴露：
 7. 汇报每个账号的覆盖范围和 freshness gap。
 
 伴随 skill 位于
-[`skills/codex-mail-workbench/SKILL.md`](skills/codex-mail-workbench/SKILL.md)。
+[`skills/codex-mail-workbench/SKILL.md`](skills/codex-mail-workbench/SKILL.md)，
+UI discovery 元数据位于
+[`skills/codex-mail-workbench/agents/openai.yaml`](skills/codex-mail-workbench/agents/openai.yaml)。
 
 ## 隐私边界
 
